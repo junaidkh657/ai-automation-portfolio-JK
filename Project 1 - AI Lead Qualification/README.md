@@ -95,7 +95,9 @@ If Reject Email fails
 ->
 Log into Failed Actions
 
-**Technologies**
+<br>
+
+###  Technologies
 
 n8n
 
@@ -109,7 +111,9 @@ Google Sheets
 
 JavaScript
 
-**JavaScript Concepts Used**
+<br>
+
+###  JavaScript Concepts Used
 
 Objects,
 Arrays, 
