@@ -80,20 +80,21 @@ Retry On Fail
 **Failure Recovery**
 
 If Gmail fails
-↓
+->
 Slack notification
-↓
+->
 Log into Failed Actions Google Sheet
 
 If Slack fails
-↓
+->
 Log into Failed Actions
 
 If Reject Email fails
-↓
+->
 Log into Failed Actions
 
 **Technologies**
+
 n8n
 
 OpenAI
@@ -108,23 +109,15 @@ JavaScript
 
 **JavaScript Concepts Used**
 
-Objects
-
-Arrays
-
-find()
-
-Optional Chaining
-
-JSON.parse()
-
-try/catch
-
-if statements
-
-Validation
-
-Booleans
+Objects,
+Arrays, 
+find(), 
+Optional Chaining, 
+JSON.parse(), 
+try/catch, 
+if statements, 
+Validation, 
+Booleans, 
 
 
 ### Instead of manually reviewing every lead:
