@@ -1,4 +1,4 @@
-# Project 1 Case Study
+# AI Lead Qualification Case Study
 **Project Name:**
 ## AI Lead Qualification System v1.0
 
