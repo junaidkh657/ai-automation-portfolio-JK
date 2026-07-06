@@ -58,6 +58,8 @@ Reject
 Polite AI Rejection Email
 Error Handling
 
+
+
 ### Implemented:
 
 **JavaScript Validation**
