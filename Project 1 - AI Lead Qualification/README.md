@@ -3,9 +3,9 @@ Project Name:
 ## AI Lead Qualification System v1.0
 
 
-# The Problem
+## The Problem
 
-## Businesses often:
+### Businesses often:
 
 Respond to leads too slowly.
 Waste time on low-quality leads.
@@ -16,7 +16,7 @@ The Solution
 
 ## An AI-powered lead qualification workflow built with n8n.
 
-## It automatically:
+### It automatically:
 
 Receives new leads.
 Extracts and validates lead information.
@@ -27,7 +27,7 @@ Recommends the next action.
 Routes the lead automatically.
 Handles workflow failures gracefully.
 
-# Workflow:
+## Workflow:
 
 Webhook
     ↓
@@ -58,26 +58,26 @@ Reject
 Polite AI Rejection Email
 Error Handling
 
-## Implemented:
+### Implemented:
 
-## JavaScript Validation
+**JavaScript Validation**
 
 Missing required fields
 Invalid webhook payload
 Safe JSON parsing
 
-## AI Validation
+**AI Validation**
 
 try/catch
 JSON.parse()
 Invalid AI response detection
 
-## Node Error Handling
+**Node Error Handling**
 
 Continue On Fail
 Retry On Fail
 
-## Failure Recovery
+**Failure Recovery**
 
 If Gmail fails
 
@@ -136,7 +136,7 @@ Analytics
 Error Trigger workflow
 Business Value
 
-## Instead of manually reviewing every lead:
+### Instead of manually reviewing every lead:
 
 AI qualifies the lead.
 High-value leads are prioritized.
