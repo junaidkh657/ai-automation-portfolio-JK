@@ -5,7 +5,7 @@ A collection of AI automation systems built using n8n, JavaScript, OpenAI, Gmail
 ## Projects
 
 - Ai Email Assistant
-- AI Lead Qualification System ✅
+- AI Lead Qualification System 
 - AI Appointment Setter (Coming Soon)
 - Customer Follow-up System (Coming Soon)
 
