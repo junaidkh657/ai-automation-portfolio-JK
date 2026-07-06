@@ -5,16 +5,17 @@
 
 ## The Problem
 
-### Businesses often:
+Businesses often:
 
-* Respond to leads too slowly.
-* Waste time on low-quality leads.
-* Forget to follow up.
-* Have no automatic lead prioritization.
-* Don't know when an automation silently fails.
-* The Solution
+- Respond to leads too slowly.
+- Waste time on low-quality leads.
+- Forget to follow up.
+- Have no automatic lead prioritization.
+- Don't know when automations silently fail.
 
-## An AI-powered lead qualification workflow built with n8n.
+## The Solution
+
+An AI-powered lead qualification workflow built with n8n that automatically analyzes incoming leads, routes them based on AI recommendations, and includes production-style error handling.
 
 ### It automatically:
 
@@ -27,36 +28,33 @@
 * Routes the lead automatically.
 * Handles workflow failures gracefully.
 
-## Workflow:
+## Workflow
 
+```text
 Webhook
-    ->
+    ↓
 Extract & Validate Lead
-    ->
+    ↓
 AI Lead Analysis
-    ->
+    ↓
 Parse AI JSON
-    ->
+    ↓
 Validate AI Output
-    ->
+    ↓
 Store Lead
-    ->
+    ↓
 Route
 
-Call Immediately
-    ->
-Slack Notification
+├── Call Immediately
+│     └── Slack Notification
 
-Follow Up
-    ->
-AI Email Generation
-    ->
-Gmail
+├── Follow Up
+│     ├── AI Email Generation
+│     └── Gmail
 
-Reject
-    ->
-Polite AI Rejection Email
-Error Handling
+└── Reject
+      └── AI Rejection Email
+```
 
 <br>
 
