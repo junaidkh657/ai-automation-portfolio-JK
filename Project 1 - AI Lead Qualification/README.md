@@ -118,10 +118,13 @@ if statements,
 Validation, 
 Booleans
 
+<br>
+
 ### Workflow
 
 ![Workflow](screenshots/workflow.png)
 
+<br>
 
 ### Instead of manually reviewing every lead:
 
