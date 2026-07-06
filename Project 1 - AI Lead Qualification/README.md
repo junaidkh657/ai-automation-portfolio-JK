@@ -1,5 +1,5 @@
 # Project 1 Case Study
-Project Name:
+**Project Name:**
 ## AI Lead Qualification System v1.0
 
 
@@ -7,25 +7,25 @@ Project Name:
 
 ### Businesses often:
 
-Respond to leads too slowly.
-Waste time on low-quality leads.
-Forget to follow up.
-Have no automatic lead prioritization.
-Don't know when an automation silently fails.
-The Solution
+* Respond to leads too slowly.
+* Waste time on low-quality leads.
+* Forget to follow up.
+* Have no automatic lead prioritization.
+* Don't know when an automation silently fails.
+* The Solution
 
 ## An AI-powered lead qualification workflow built with n8n.
 
 ### It automatically:
 
-Receives new leads.
-Extracts and validates lead information.
-Uses AI to analyze lead quality.
-Scores the lead.
-Determines urgency.
-Recommends the next action.
-Routes the lead automatically.
-Handles workflow failures gracefully.
+* Receives new leads.
+* Extracts and validates lead information.
+* Uses AI to analyze lead quality.
+* Scores the lead.
+* Determines urgency.
+* Recommends the next action.
+* Routes the lead automatically.
+* Handles workflow failures gracefully.
 
 ## Workflow:
 
