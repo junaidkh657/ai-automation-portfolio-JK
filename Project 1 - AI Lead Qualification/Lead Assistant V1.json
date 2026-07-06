@@ -1,0 +1,1186 @@
+{
+  "name": "Lead Assistant V1",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-qualification-webhook",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -128,
+        -48
+      ],
+      "id": "5dd90ad0-b9e8-43b4-82b5-044007893f23",
+      "name": "Webhook",
+      "webhookId": "3347b9ea-8751-42c7-91bf-bac77ba7de4a"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "qwen3.6-flash",
+          "mode": "list",
+          "cachedResultName": "qwen3.6-flash"
+        },
+        "messages": {
+          "messageValues": [
+            {
+              "content": "=You are an AI Lead Qualification Assistant.\n\nYour job is to qualify business leads for an AI automation agency.\n\nEvaluate the lead primarily using:\n\n1. Business need (most important)\n- Does the message describe a real business problem?\n- Does the lead clearly explain what they want?\n\n2. Project fit\n- Is the request related to AI, automation, chatbots, voice agents, workflows, CRM, or business process automation?\n\n3. Budget\n- Is the budget realistic for the requested project?\n- Do not reject a lead only because the budget is low.\n\n4. Urgency\n- Does the lead appear ready to start soon?\n- Are they actively looking for a solution?\n\n5. Company information\n- Company information adds context but should not heavily influence the score.\n\nDo NOT score based on:\n- Email address\n- Phone number\n- Name\nunless they are clearly fake or missing.\n\nScoring Guide:\n\n9-10:\nClear business problem, good project fit, realistic expectations, likely ready to buy.\n\n7-8:\nGood lead but needs clarification or budget discussion.\n\n4-6:\nInteresting lead but missing information or uncertain fit.\n\n1-3:\nSpam, fake inquiry, unrelated request, or almost no useful information.\n\nRecommendations:\n\nCall Immediately\n- Score >= 8\n\nFollow Up\n- Score 4-7\n\nReject\n- Score <= 3\nOnly reject obvious spam, fake, or completely irrelevant inquiries.\n\nReturn ONLY valid JSON in this format:\n\n{\n  \"lead_score\": 0,\n  \"budget_score\": \"High | Medium | Low\",\n  \"urgency\": \"High | Medium | Low\",\n  \"recommendation\": \"Call Immediately | Follow Up | Reject\",\n  \"reason\": \"\",\n  \"confidence\": 0-100\n\"missing_information\": [\n    \"Timeline\",\n    \"Expected users\",\n    \"Current process\"\n  ]\n}",
+              "role": "assistant"
+            },
+            {
+              "content": "=Here is the Lead details:\nName:{{ $json.name }}\n\nEmail:{{ $json.email }}\n\nPhone Number:{{ $json.phone_number }}\n\nCompany:{{ $json.company }}\n\nBudget:{{ $json.budget }}\n\nMessage:{{ $json.message }}\n\noutput always JSON {{ $json.name }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.alibabaCloud",
+      "typeVersion": 1.1,
+      "position": [
+        336,
+        80
+      ],
+      "id": "10cb1e40-3c39-430d-84e7-a8d01f63dfee",
+      "name": "Message a model",
+      "credentials": {
+        "alibabaCloudApi": {
+          "id": "LbKypJDR8bBiUm9r",
+          "name": "LLM Provider (Demo)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.ai.recommendation }}",
+                    "rightValue": "Follow Up",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "40b41363-8922-4ad9-8c3e-a17ccec6cdb1"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "e196ee07-88da-41a4-b09b-48285c9225c7",
+                    "leftValue": "={{ $json.ai.recommendation }}",
+                    "rightValue": "Call Immediately",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "dedb630d-1697-422d-b6a1-617a0227c801",
+                    "leftValue": "={{ $json.ai.recommendation }}",
+                    "rightValue": "Reject",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1408,
+        -48
+      ],
+      "id": "1edb751b-f86d-4bba-b07f-904a0322eb28",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1136,
+        -32
+      ],
+      "id": "28854372-1c31-4506-858c-75c3fc818fe7",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "<GOOGLE_SHEET_ID>",
+          "mode": "list",
+          "cachedResultName": "AI Agency Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/GOOGLE_SHEET_ID/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/GOOGLE_SHEET_ID/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $now }}",
+            "Name": "={{ $json.name }}",
+            "Email": "={{ $json.email }}",
+            "Company": "={{ $json.company }}",
+            "Budget": "={{ $json.budget }}",
+            "Message": "={{ $json.message }}",
+            "Score": "={{ $json.ai.lead_score }}",
+            "Urgency": "={{ $json.ai.urgency }}",
+            "Recommendation": "={{ $json.ai.recommendation }}",
+            "Phone": "={{ $json.phone_number }}",
+            "Status": "={{ $('Code in JavaScript').item.json.success }}",
+            "Error": "={{ $('Code in JavaScript').item.json.error }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Budget",
+              "displayName": "Budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Message",
+              "displayName": "Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Urgency",
+              "displayName": "Urgency",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Recommendation",
+              "displayName": "Recommendation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Error",
+              "displayName": "Error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1264,
+        208
+      ],
+      "id": "280e6d91-ed20-4b8b-8454-2c5514786eb4",
+      "name": "Storing Leads",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DF7UzQofvia9jj6g",
+          "name": "Google Sheets (Demo)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0BEZTX5BGA",
+          "mode": "list",
+          "cachedResultName": "hot-lead"
+        },
+        "text": "=NEW HOT LEAD  \n\nName: {{ $('Merge').item.json.name }}\nCompany: {{ $('Merge').item.json.company }}\nEmail: {{ $('Merge').item.json.email }}\nBudget: {{ $('Merge').item.json.budget }}\nScore: {{ $('Merge').item.json.ai.lead_score }}\nUrgency: {{ $('Merge').item.json.ai.urgency }}\nMessage:\n{{ $('Merge').item.json.message }}\nsummary:\n{{ $('Merge').item.json.ai.reason }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.5,
+      "position": [
+        1712,
+        64
+      ],
+      "id": "5ba30aee-5c7a-4c42-9052-29b70645b2b4",
+      "name": "Send a message",
+      "webhookId": "eb657b98-8d3e-416b-9d86-c074552dd998",
+      "credentials": {
+        "slackApi": {
+          "id": "fKS6Z0TyVARUORoj",
+          "name": "Slack (Demo)"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "sendTo": "sales@example.com",
+        "subject": "🔥 New Hot Lead - Junaid K",
+        "emailType": "text",
+        "message": "=A new qualified lead has arrived.\n\nName: {{ $('Merge').item.json.name }}\nCompany: {{ $('Merge').item.json.company }}\nBudget: {{ $('Merge').item.json.budget }}\nLead Score: {{ $('Merge').item.json.ai.lead_score }}\nRecommendation: {{ $('Merge').item.json.ai.recommendation }}\n\nMessage:\n{{ $json.message }}\nAi Recommendation:\n{{ $('Merge').item.json.ai.reason }}\n\n\nOpen Google Sheets for full details.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1712,
+        -96
+      ],
+      "id": "2fb25635-99f3-42ee-9c46-a418850ee5b6",
+      "name": "Send a message1",
+      "webhookId": "0a66d62b-f37f-4c93-b1ae-8efc0a078103",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "KwoF1SaymqzDINwb",
+          "name": "Gmail (Demo)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "qwen3.6-plus",
+          "mode": "list",
+          "cachedResultName": "qwen3.6-plus"
+        },
+        "messages": {
+          "messageValues": [
+            {
+              "content": "=You are a professional sales assistant.\n\nWrite a friendly follow-up email.\n\nMention the customer's project briefly.\n\nAsk ONLY the missing information needed to prepare a proposal.\n\nKeep it under 80 words.\n\nTone:\nProfessional, warm and concise.\n\nDo not oversell.\n\nAlso ask for follow up questions according to the context of the lead: \n\nfor Example: \n  follow_up_questions: \n    What CRM do you currently use?\n    How many leads do you receive weekly?\n    Do you already use WhatsApp Business?\n\nWrite Email in Html format.\nProvide Subject and Body in JSON format",
+              "role": "assistant"
+            },
+            {
+              "content": "=This is the detail of lead of client:\n\nName: {{ $json.name }}\nCompany: {{ $json.company }}\nPhone Number: {{ $json.phone_number }}\nBudget: {{ $json.budget }}\nMessage: {{ $json.message }}\nMissing Information: {{ $json.missing_information }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.alibabaCloud",
+      "typeVersion": 1.1,
+      "position": [
+        1568,
+        -272
+      ],
+      "id": "a447410b-a1da-436f-9fa9-78d837def19a",
+      "name": "Message a model1",
+      "credentials": {
+        "alibabaCloudApi": {
+          "id": "LbKypJDR8bBiUm9r",
+          "name": "LLM Provider (Demo)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Merge').item.json.email }}",
+        "subject": "={{ $json.Subject }}",
+        "message": "={{ $json.Body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2096,
+        -272
+      ],
+      "id": "8c7bc680-85ce-4501-b89b-b3aeaf4f3a63",
+      "name": "Send a message2",
+      "webhookId": "ae0a8be5-47df-4ea3-b0e9-5070a11ff6ef",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "KwoF1SaymqzDINwb",
+          "name": "Gmail (Demo)"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const content = $input.first().json.content;\n\n// Remove Markdown code fences\nconst clean = content\n  .replace(/```json/g, \"\")\n  .replace(/```/g, \"\")\n  .trim();\n\n// Convert string → object\nconst email = JSON.parse(clean);\n\nreturn [{\n  json: email\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1904,
+        -272
+      ],
+      "id": "efcf8625-18a0-4dcd-8b24-103efa2bf161",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Merge').item.json.email }}",
+        "subject": "=Thank you for contacting Junaid K",
+        "emailType": "text",
+        "message": "=Hi {{ $('Merge').item.json.name }},\n\nThank you for reaching out and sharing your inquiry.\n\nAt the moment, we may not be the best fit for your current request.\n\nWe truly appreciate your interest and wish you success with your project.\n\nIf your requirements change in the future, we'd be happy to hear from you again.\n\nBest regards,\nYour_Company",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1664,
+        272
+      ],
+      "id": "8652268c-ea21-410f-b3c1-78728f1efc98",
+      "name": "Send a message3",
+      "webhookId": "ae0a8be5-47df-4ea3-b0e9-5070a11ff6ef",
+      "retryOnFail": true,
+      "executeOnce": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "KwoF1SaymqzDINwb",
+          "name": "Gmail (Demo)"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = items[0].json;\nconst fields = item.body.data.fields;\n\nlet lead = {\n  name: fields.find(f => f.label === \"Full Name\")?.value ,\n  email: fields.find(f => f.label === \"Email\")?.value,\n  phone_number: fields.find(f => f.label === \"Phone Number\")?.value,\n  company: fields.find(f => f.label === \"Comapany\")?.value,\n  budget: fields.find(f => f.label === \"Budget\")?.value,\n  message: fields.find(f => f.label === \"Message\")?.value,\n}\n\nif (!lead.email) {\n  return [{\n    json: {\n      error: \"Missing email\"\n    }\n  }];\n}\n\nif (!lead.name) {\n  return [{\n    json: {\n      error: \"Missing name\"\n    }\n  }];\n}\n\nif (!lead.message) {\n  return [{\n    json: {\n      error: \"Missing message\"\n    }\n  }];\n}\n\nbudget: fields.find(f => f.label === \"Budget\")?.value ?? \"Not Provided\"\n\nreturn [{ json: lead }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        96,
+        -48
+      ],
+      "id": "2df7b489-659f-44d2-9b55-44d9cda4aebe",
+      "name": "Fetch Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const content = $input.first().json.content;\n\ntry {\n  const ai = JSON.parse(content);\n\n  const missing = [];\n\nif (ai.lead_score === undefined) missing.push(\"lead_score\");\nif (!ai.budget_score) missing.push(\"budget_score\");\nif (!ai.urgency) missing.push(\"urgency\");\nif (!ai.recommendation) missing.push(\"recommendation\");\nif (!ai.reason) missing.push(\"reason\");\nif (ai.confidence === undefined) missing.push(\"confidence\");\n\n  if (missing.length > 0) {\n  return [{\n    json: {\n      success: false,\n      error: `AI is missing: ${missing.join(\", \")}`\n    }\n  }];\n}\n\n  return [{\n    json: {\n      success: true,\n      ai\n    }\n  }];\n\n} catch (err) {\n\n  return [{\n    json: {\n      success: false,\n      error: err.message,\n      rawResponse: content\n    }\n  }];\n\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        80
+      ],
+      "id": "248c10de-c821-40bc-adec-32a8fc0b9337",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.success }}",
+                    "rightValue": "true",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "f8155aca-ceeb-4ed8-b558-9bbccd89193c"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "5a0d9816-b13c-4543-8d27-342eb97faf6e",
+                    "leftValue": "={{ $json.success }}",
+                    "rightValue": "false",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "false",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        944,
+        80
+      ],
+      "id": "4fdff5f0-e1a7-4b66-9d14-c2bc268161cb",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0BF2RCAUD9",
+          "mode": "list",
+          "cachedResultName": "error-alerts"
+        },
+        "text": "=🚨 AI Lead Assistant - Email Delivery Failed\n\nWorkflow: AI Lead Qualification v1\nNode: Gmail (Follow Up)\n\nReason:\n{{ $json.error }}\n\nTime:\n{{ $now }}\n\nExecution ID:\n{{ $execution.id }}\n\n━━━━━━━━━━━━━━━━━━━━\n\nLead Details\n\nName:\n{{ $('Merge').item.json.name }}\n\nCompany:\n{{ $('Merge').item.json.company }}\n\nEmail:\n{{ $('Merge').item.json.email }}\n\nBudget:\n{{ $('Merge').item.json.budget }}\n\nRecommendation:\n{{ $('Merge').item.json.ai.recommendation }}\n\nLead Score:\n{{ $('Merge').item.json.ai.lead_score }}/10\n\nUrgency:\n{{ $('Merge').item.json.ai.urgency }}\n\n━━━━━━━━━━━━━━━━━━━━\n\nLead Message:\n\n{{ $('Merge').item.json.message }}\n\nAI Summary:\n\n{{ $('Merge').item.json.ai.reason }}\n\n━━━━━━━━━━━━━━━━━━━━\n\nAction Required:\n\n{{ $json.error.includes(\"Invalid email\")\n   ? \"Verify the client's email address and resend manually.\"\n   : \"Investigate the Gmail node and retry sending the email.\" }}\n",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.5,
+      "position": [
+        2384,
+        -256
+      ],
+      "id": "90f52861-ed1d-41a6-99d0-5a0999736c3d",
+      "name": "Send a message4",
+      "webhookId": "eb657b98-8d3e-416b-9d86-c074552dd998",
+      "credentials": {
+        "slackApi": {
+          "id": "fKS6Z0TyVARUORoj",
+          "name": "Slack (Demo)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "<GOOGLE_SHEET_ID>",
+          "mode": "list",
+          "cachedResultName": "Untitled spreadsheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/GOOGLE_SHEET_ID/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/GOOGLE_SHEET_ID/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Error": "={{ $json.error }}",
+            "Execution id ": "={{ $execution.id }}",
+            "Time": "={{ $now }}",
+            "Lead Name": "={{ $('Merge').item.json.name }}",
+            "Action": "Follow-up Email",
+            "Status": "Pending",
+            "Workflow": "Lead Assistant V1",
+            "Assigned To": "Junaid"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Execution id ",
+              "displayName": "Execution id ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Name",
+              "displayName": "Lead Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Action",
+              "displayName": "Action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Error",
+              "displayName": "Error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Workflow",
+              "displayName": "Workflow",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Assigned To",
+              "displayName": "Assigned To",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2400,
+        -64
+      ],
+      "id": "53c26aae-49ab-4a29-bd34-cc966d6e3287",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DF7UzQofvia9jj6g",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "<GOOGLE_SHEET_ID>",
+          "mode": "list",
+          "cachedResultName": "Untitled spreadsheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/GOOGLE_SHEET_ID/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/GOOGLE_SHEET_ID/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Error": "={{ $json.error }}",
+            "Execution id ": "={{ $execution.id }}",
+            "Time": "={{ $now }}",
+            "Lead Name": "={{ $('Merge').item.json.name }}",
+            "Action": "Slack Hot lead Error",
+            "Status": "Pending",
+            "Workflow": "Lead Assistant V1",
+            "Assigned To": "Junaid"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Execution id ",
+              "displayName": "Execution id ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Name",
+              "displayName": "Lead Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Action",
+              "displayName": "Action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Error",
+              "displayName": "Error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Workflow",
+              "displayName": "Workflow",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Assigned To",
+              "displayName": "Assigned To",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1984,
+        80
+      ],
+      "id": "61b46dbc-04d9-4124-9a48-73e397337b47",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DF7UzQofvia9jj6g",
+          "name": "Google Sheets (Demo)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "<GOOGLE_SHEET_ID>",
+          "mode": "list",
+          "cachedResultName": "Untitled spreadsheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/GOOGLE_SHEET_ID/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/GOOGLE_SHEET_ID/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Error": "={{ $json.error }}",
+            "Execution id ": "={{ $execution.id }}",
+            "Time": "={{ $now }}",
+            "Lead Name": "={{ $('Merge').item.json.name }}",
+            "Action": "Rejection Email Error",
+            "Status": "Pending",
+            "Workflow": "Lead Assistant V1",
+            "Assigned To": "Junaid"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Execution id ",
+              "displayName": "Execution id ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Name",
+              "displayName": "Lead Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Action",
+              "displayName": "Action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Error",
+              "displayName": "Error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Workflow",
+              "displayName": "Workflow",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Assigned To",
+              "displayName": "Assigned To",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1904,
+        288
+      ],
+      "id": "2aaee6a8-985f-4438-9084-77840b5eccfc",
+      "name": "Append row in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DF7UzQofvia9jj6g",
+          "name": "Google Sheets (Demo)"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Fetch Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Storing Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Webhook": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Storing Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message2": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Send a message4",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Storing Leads": {
+      "main": [
+        []
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message3": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Append row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "5ec580f9-bdc2-4f35-9f5b-d6a9fbde41c0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f9dd287fd9af200d21367f2fb8b244176660aff4d8c66701d41960f22917aa12"
+  },
+  "nodeGroups": [],
+  "id": "H6blqVRuEDflVWGQ",
+  "tags": [
+    {
+      "updatedAt": "2026-06-28T10:44:39.320Z",
+      "createdAt": "2026-06-28T10:44:39.320Z",
+      "id": "TOmO55GRGH7R6in2",
+      "name": "Assistant"
+    }
+  ]
+}
