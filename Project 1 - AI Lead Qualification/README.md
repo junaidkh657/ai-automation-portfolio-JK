@@ -117,7 +117,7 @@ JSON.parse(),
 try/catch, 
 if statements, 
 Validation, 
-Booleans, 
+Booleans
 
 
 ### Instead of manually reviewing every lead:
