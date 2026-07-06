@@ -104,7 +104,6 @@ Log into Failed Actions
 * Google Sheets
 * JavaScript
 
-<br>
 
 ###  JavaScript Concepts Used
 
