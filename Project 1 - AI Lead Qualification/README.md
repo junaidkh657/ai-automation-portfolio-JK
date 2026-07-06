@@ -97,17 +97,12 @@ Log into Failed Actions
 
 ###  Technologies
 
-n8n
-
-OpenAI
-
-Gmail
-
-Slack
-
-Google Sheets
-
-JavaScript
+* n8n
+* OpenAI
+* Gmail
+* Slack
+* Google Sheets
+* JavaScript
 
 <br>
 
@@ -122,6 +117,10 @@ try/catch,
 if statements, 
 Validation, 
 Booleans
+
+### Workflow
+
+![Workflow](screenshots/workflow.png)
 
 
 ### Instead of manually reviewing every lead:
