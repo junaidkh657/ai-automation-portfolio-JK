@@ -132,5 +132,11 @@ Every lead is stored.
 Failures are logged instead of disappearing.
 Estimated Time
 
-Around 12–15 hours (adjust this to match your actual time if you tracked it).
+### Business Outcomes
 
+- AI automatically qualifies every incoming lead.
+- High-priority leads trigger instant Slack notifications.
+- Medium-priority leads receive personalized follow-up emails.
+- Low-quality leads receive a polite rejection email.
+- Every lead is stored in Google Sheets.
+- Failed actions are logged instead of silently disappearing.
