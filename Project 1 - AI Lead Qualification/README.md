@@ -30,31 +30,31 @@ Handles workflow failures gracefully.
 ## Workflow:
 
 Webhook
-    ↓
+    ->
 Extract & Validate Lead
-    ↓
+    ->
 AI Lead Analysis
-    ↓
+    ->
 Parse AI JSON
-    ↓
+    ->
 Validate AI Output
-    ↓
+    ->
 Store Lead
-    ↓
+    ->
 Route
 
 Call Immediately
-    ↓
+    ->
 Slack Notification
 
 Follow Up
-    ↓
+    ->
 AI Email Generation
-    ↓
+    ->
 Gmail
 
 Reject
-    ↓
+    ->
 Polite AI Rejection Email
 Error Handling
 
