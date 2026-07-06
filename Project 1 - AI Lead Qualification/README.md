@@ -80,28 +80,20 @@ Retry On Fail
 **Failure Recovery**
 
 If Gmail fails
-
 ↓
-
 Slack notification
-
 ↓
-
 Log into Failed Actions Google Sheet
 
 If Slack fails
-
 ↓
-
 Log into Failed Actions
 
 If Reject Email fails
-
 ↓
-
 Log into Failed Actions
 
-Technologies
+**Technologies**
 n8n
 OpenAI
 Gmail
