@@ -58,7 +58,7 @@ Reject
 Polite AI Rejection Email
 Error Handling
 
-
+<br>
 
 ### Implemented:
 
